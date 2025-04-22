@@ -1,4 +1,5 @@
 from flask import render_template, jsonify, redirect, url_for, Blueprint
+from book import Book
 
 # Blueprints
 routes = Blueprint('routes', __name__)
@@ -31,3 +32,9 @@ def hello_specific_name(name):
 def json_response():
     response = {"name": "Alexandre", "age": 29}
     return jsonify([response])
+
+# API
+@routes.route('/api/books', methodes=['GET'])
+def get_books():
+    books = Book.query.all()
+    return jsonify([book.to_dict() for book in books])
