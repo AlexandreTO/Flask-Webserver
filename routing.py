@@ -1,4 +1,4 @@
-from flask import render_template, jsonify
+from flask import render_template, jsonify, redirect, url_for
 from hello_world import app
 
 @app.route("/")
@@ -9,13 +9,21 @@ def index():
 def hello_world():
     return render_template('index.html')
 
-@app.route('/hello/<user>')
-def hello_user(user):
-    return 'Hello %s' % user
+@app.route("/admin")
+def hello_admin():
+    return 'Admin'
 
-@app.route("/")
-def index():
-    return 'Index Page'
+@app.route("/user/<name>")
+def hello_user(name):
+    return 'Hello %s' % name
+
+### URL BUILDING
+@app.route('/user/<name>')
+def hello_specific_name(name):
+    if name == 'Alexandre':
+        return redirect(url_for('hello_admin'))
+    else:
+        return redirect(url_for('hello_user', name = name ))
 
 # JSON test
 def json_response():
