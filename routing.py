@@ -1,24 +1,26 @@
-from flask import render_template, jsonify, redirect, url_for
-from hello_world import app
+from flask import render_template, jsonify, redirect, url_for, Blueprint
 
-@app.route("/")
+# Blueprints
+routes = Blueprint('routes', __name__)
+
+@routes.route("/")
 def index():
     return 'Index Page'
 
-@app.route("/hello")
+@routes.route("/hello")
 def hello_world():
     return render_template('index.html')
 
-@app.route("/admin")
+@routes.route("/admin")
 def hello_admin():
     return 'Admin'
 
-@app.route("/user/<name>")
+@routes.route("/user/<name>")
 def hello_user(name):
     return 'Hello %s' % name
 
 ### URL BUILDING
-@app.route('/user/<name>')
+@routes.route('/user/<name>')
 def hello_specific_name(name):
     if name == 'Alexandre':
         return redirect(url_for('hello_admin'))
