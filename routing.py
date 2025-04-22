@@ -9,6 +9,14 @@ def index():
 def hello_world():
     return render_template('index.html')
 
+@app.route('/hello/<user>')
+def hello_user(user):
+    return 'Hello %s' % user
+
+@app.route("/")
+def index():
+    return 'Index Page'
+
 # JSON test
 def json_response():
     response = {"name": "Alexandre", "age": 29}
