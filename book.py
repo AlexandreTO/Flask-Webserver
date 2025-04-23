@@ -14,7 +14,7 @@ class Book(db.Model):
     author = db.Column(db.String(100), nullable=False)
     genre = db.Column(db.String(100), nullable=False)
     
-    # return the data in a dictionnary
+    # return the data in a dictionnary for the api
     def to_dict(self):
         return {'id': self.id, 'title': self.title, 'author': self.author, 'genre': self.genre}
 
