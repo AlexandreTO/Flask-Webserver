@@ -1,5 +1,6 @@
-from flask import render_template, jsonify, redirect, url_for, Blueprint
+from flask import render_template, jsonify, redirect, url_for, Blueprint, request
 from book import Book
+from database import db
 
 # Blueprints
 routes = Blueprint('routes', __name__)
@@ -38,3 +39,23 @@ def json_response():
 def get_books():
     books = Book.query.all()
     return jsonify([book.to_dict() for book in books])
+
+@routes.route('/api/books', methods=['POST'])
+def create_book():
+    if not request.is_json:
+        return jsonify({"error": "Request must be JSON"}), 400
+    
+    new_book = Book(
+        title = request.json['title'],
+        author = request.json['author'],
+        genre = request.json['genre']
+    )
+
+    data = request.get_json()
+    
+    if 'title' not in data or 'author' not in data or 'genre' not in data:
+        return jsonify({"error": "Missing required fields"}), 400
+    
+    db.session.add(new_book)
+    db.session.commit()
+    return jsonify(new_book.to_dict()), 201
