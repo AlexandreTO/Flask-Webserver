@@ -35,11 +35,13 @@ def json_response():
     return jsonify([response])
 
 # API
+# Get ALL books
 @routes.route('/api/books', methodes=['GET'])
 def get_books():
     books = Book.query.all()
     return jsonify([book.to_dict() for book in books])
 
+# Create a book
 @routes.route('/api/books', methods=['POST'])
 def create_book():
     if not request.is_json:
@@ -59,3 +61,24 @@ def create_book():
     db.session.add(new_book)
     db.session.commit()
     return jsonify(new_book.to_dict()), 201
+
+#Get one book with his id
+@routes.route('/api/book<int:book_id>', methods=['GET'])
+def get_book(book_id):
+    book = Book.query.get_or_404(book_id)
+    return jsonify(book.to_dict())
+
+#Update a book
+@routes.route('/api/books/<int:book_id>', methods=['PUT'])
+def update_book(book_id):
+    book = Book.query.get_or_404(book_id)
+    
+    if 'title' in request.json:
+        book.title = request.json['title']
+    if 'author' in request.json:
+        book.author = request.json['author']
+    if 'genre' in request.json:
+        book.genre = request.json['genre']
+        
+    db.session.commit()
+    return jsonify(book.to_dict())
