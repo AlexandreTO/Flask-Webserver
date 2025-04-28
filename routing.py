@@ -1,9 +1,12 @@
 from flask import render_template, jsonify, redirect, url_for, Blueprint, request
 from book import Book
+from flask_jwt_extended import JWTManager, jwt_required, create_access_token
 from database import db
 
 # Blueprints
 routes = Blueprint('routes', __name__)
+
+## TODO Implement JWT token. Read the doc on how to properly implement it.
 
 @routes.route("/")
 def index():
