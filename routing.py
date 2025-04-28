@@ -38,8 +38,17 @@ def json_response():
 # Get ALL books
 @routes.route('/api/books', methodes=['GET'])
 def get_books():
-    books = Book.query.all()
-    return jsonify([book.to_dict() for book in books])
+    #Pagination
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 10, type=int)
+    
+    books = Book.query.paginate(page, per_page, False)
+    return jsonify({
+        'books': [book.to_dict() for book in books.items],
+        'page': page,
+        'per_page': per_page,
+        'total': books.total
+    })
 
 # Create a book
 @routes.route('/api/books', methods=['POST'])
@@ -82,3 +91,10 @@ def update_book(book_id):
         
     db.session.commit()
     return jsonify(book.to_dict())
+
+@routes.route('/api/books/<int:book_id>', methods=['DELETE'])
+def delete_book(book_id):
+    book = Book.query.get_or_404(book_id)
+    db.session.delete(book)
+    db.session.commit()
+    return jsonify({"message": "Book deleted successfully"}), 200
