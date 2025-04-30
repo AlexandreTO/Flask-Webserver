@@ -7,6 +7,8 @@ from database import db
 routes = Blueprint('routes', __name__)
 
 ## TODO Implement JWT token. Read the doc on how to properly implement it.
+routes.config['JWT_SECRET_KEY'] = 'secret'  # TEMP
+jwt = JWTManager(routes)
 
 @routes.route("/")
 def index():
@@ -58,21 +60,27 @@ def get_books():
 def create_book():
     if not request.is_json:
         return jsonify({"error": "Request must be JSON"}), 400
-    
-    new_book = Book(
-        title = request.json['title'],
-        author = request.json['author'],
-        genre = request.json['genre']
-    )
 
-    data = request.get_json()
-    
-    if 'title' not in data or 'author' not in data or 'genre' not in data:
-        return jsonify({"error": "Missing required fields"}), 400
-    
-    db.session.add(new_book)
-    db.session.commit()
-    return jsonify(new_book.to_dict()), 201
+    try:
+        data = request.get_json()
+        
+        if 'title' not in data or 'author' not in data or 'genre' not in data:
+            return jsonify({"error": "Missing required fields"}), 400
+
+        new_book = Book(
+            title=data['title'],
+            author=data['author'],
+            genre=data['genre']
+        )
+
+        db.session.add(new_book)
+        db.session.commit()
+
+        return jsonify(new_book.to_dict()), 201
+
+    except Exception as e:
+        db.session.rollback() 
+        return jsonify({"error": f"An error occurred: {str(e)}"}), 500
 
 #Get one book with his id
 @routes.route('/api/book<int:book_id>', methods=['GET'])
